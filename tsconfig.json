@@ -1,0 +1,8 @@
+{
+  "include": ["src/**/*.ts", "src/**/*.vue"],
+  "compilerOptions": {
+    "lib": ["ESNext", "DOM"],
+    "skipLibCheck": true,
+    "isolatedModules": true
+  }
+}
