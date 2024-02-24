@@ -2,25 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  @apply bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400;
+}
+
 h1 {
-  @apply text-5xl mb-6;
+  @apply text-5xl mb-6 text-gray-900 dark:text-white;
 }
 
 h2 {
-  @apply text-4xl mb-4;
+  @apply text-4xl mb-4 text-gray-900 dark:text-white;
 }
 
 h3 {
-  @apply text-2xl mb-3;
+  @apply text-2xl mb-3 text-gray-900 dark:text-white;
+}
+
+hr {
+  @apply border-gray-200 dark:border-gray-700;
 }
 
 select,
 input {
-  @apply bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5;
+  @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
 }
 
-button {
-  @apply bg-gray-50 border border-gray-300 text-gray-900 hover:bg-gray-100 active:bg-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-1 px-2 transition-colors;
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  @apply bg-gray-50 hover:bg-gray-100 active:bg-gray-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:hover:bg-gray-600 dark:active:bg-gray-800 transition-colors;
 }
 
 dt {

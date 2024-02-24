@@ -32,7 +32,8 @@ const versions = {
       </div>
     </template>
     <template #select="{ options }">
-      <select v-model="selectedCommunity" class="mb-4">
+      <label for="community-select" class="sr-only">Community</label>
+      <select v-model="selectedCommunity" id="community-select" class="mb-4">
         <option value="" disabled>Select your community</option>
         <option v-for="community in options" :value="community">
           {{ community }}

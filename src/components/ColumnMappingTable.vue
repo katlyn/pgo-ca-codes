@@ -2,9 +2,10 @@
 import { AllowedVersions } from "../dataTransformers/Transformer";
 import { V1 } from "../dataTransformers/V1";
 import { V2 } from "../dataTransformers/V2";
-import { computed } from "vue";
+import { computed, useSlots } from "vue";
 
 const props = defineProps<{ version: AllowedVersions }>();
+const slots = useSlots();
 
 const fakeSheet = { key: "", gid: "" };
 const versions = {
@@ -22,8 +23,11 @@ const versionCells = computed(() =>
 
 <template>
   <div class="relative overflow-x-auto">
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+    <table
+      class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border dark:border-gray-600"
+    >
       <caption
+        v-if="slots.default"
         class="text-slate-500 dark:text-slate-400 pt-4 text-xs caption-bottom"
       >
         <slot />
@@ -35,15 +39,18 @@ const versionCells = computed(() =>
           <th
             v-for="header in versionHeaders"
             scope="col"
-            class="px-6 py-3 border"
+            class="px-6 py-3 border dark:border-gray-600"
           >
             {{ header }}
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-          <td v-for="cell in versionCells" class="px-6 py-4 border">
+        <tr class="bg-white dark:bg-gray-800">
+          <td
+            v-for="cell in versionCells"
+            class="px-6 py-4 border dark:border-gray-600"
+          >
             {{ cell }}
           </td>
         </tr>

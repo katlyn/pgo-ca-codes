@@ -24,17 +24,20 @@ function parseUrl() {
 
 <template>
   <p class="text-center mb-2">
-    <span class="font-bold">Important:</span> you must use the full URL of the
-    tab that has all codes on it.
+    <span class="font-bold">Important:</span>
+    you must use the full URL of the tab that has code bundles on it.
   </p>
-  <div class="flex gap-2 mb-6">
+  <form @submit.prevent="parseUrl" class="flex gap-2 mb-6">
+    <label for="url-input" class="sr-only">Sheet URL</label>
     <input
       v-model="sheetURL"
+      id="url-input"
       type="text"
       class="grow"
       placeholder="Sheet URL"
     />
-    <select v-model="selectedVersion" class="w-24">
+    <label for="version-select" class="sr-only">Version</label>
+    <select v-model="selectedVersion" id="version-select" class="w-24">
       <option
         v-for="version of Object.keys(AllowedVersions).sort().reverse()"
         :value="version"
@@ -42,8 +45,8 @@ function parseUrl() {
         {{ version }}
       </option>
     </select>
-    <button @click="parseUrl" class="w-24">Go!</button>
-  </div>
+    <button type="submit" class="w-24">Go!</button>
+  </form>
 
   <h2>Which version should I use?</h2>
   <p>
