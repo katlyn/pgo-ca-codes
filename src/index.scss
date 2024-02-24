@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+h1 {
+  @apply text-5xl mb-4;
+}
+
+h2 {
+  @apply text-4xl mb-3;
+}
+
+h3 {
+  @apply text-2xl mb-2;
+}
+
+select,
+input {
+  @apply bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5;
+}
+
+button {
+  @apply bg-gray-50 border border-gray-300 text-gray-900 hover:bg-gray-100 active:bg-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-1 px-2 transition-colors;
+}

@@ -5,7 +5,7 @@ export interface Community {
   name: string;
   events: CommunityEvent[];
 }
-interface CommunityEvent {
+export interface CommunityEvent {
   name: string;
   date: Date;
   codes: string[];
@@ -13,7 +13,7 @@ interface CommunityEvent {
 
 export type V2Transformed = Record<string, Community>;
 
-export default class V2 extends Transformer {
+export class V2 extends Transformer {
   query = "SELECT A,B,C,D,E";
   columnMapping = {
     A: "communityName",

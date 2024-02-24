@@ -5,6 +5,11 @@ import {
   SheetParameters,
 } from "../sheetUtils";
 
+export enum AllowedVersions {
+  V1 = "V1",
+  V2 = "V2",
+}
+
 export default abstract class Transformer {
   query: string;
   columnMapping: Record<string, string>;
