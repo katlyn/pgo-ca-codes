@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import V2Listing from "./components/V2Listing.vue";
-import { extractSheetParameters } from "./sheetUtils";
-import V1Listing from "./components/V1Listing.vue";
-import ListingSelect from "./components/ListingSelect.vue";
-import SheetInput from "./components/SheetInput.vue";
+import { defineAsyncComponent, ref } from "vue";
+
+const ListingSelect = defineAsyncComponent(
+  () => import("./components/ListingSelect.vue"),
+);
+const SheetInput = defineAsyncComponent(
+  () => import("./components/SheetInput.vue"),
+);
 
 const currentURL = new URL(window.location.href);
 const params = {

@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { SheetParameters } from "../sheetUtils";
-import { ref } from "vue";
+import { defineAsyncComponent, ref } from "vue";
 import { AllowedVersions } from "../dataTransformers/Transformer";
-import V1Listing from "./V1Listing.vue";
-import V2Listing from "./V2Listing.vue";
 import LoadingSpinner from "./LoadingSpinner.vue";
 
 const props = defineProps<{
@@ -14,8 +12,8 @@ const props = defineProps<{
 const selectedCommunity = ref("");
 
 const versions = {
-  [AllowedVersions.V1]: V1Listing,
-  [AllowedVersions.V2]: V2Listing,
+  [AllowedVersions.V1]: defineAsyncComponent(() => import("./V1Listing.vue")),
+  [AllowedVersions.V2]: defineAsyncComponent(() => import("./V2Listing.vue")),
 };
 </script>
 
