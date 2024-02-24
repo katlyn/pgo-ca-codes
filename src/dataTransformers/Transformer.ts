@@ -11,8 +11,8 @@ export enum AllowedVersions {
 }
 
 export default abstract class Transformer {
-  query: string;
-  columnMapping: Record<string, string>;
+  abstract query: string;
+  abstract columnMapping: Record<string, string>;
   sheetParameters: SheetParameters;
 
   constructor(sheetParameters: SheetParameters) {
