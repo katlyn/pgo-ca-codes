@@ -2,12 +2,11 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { V1, V1Transformed } from "../dataTransformers/V1";
 import { SheetParameters } from "../sheetUtils";
-import copy from "../copy";
 import CopyButton from "./CopyButton.vue";
 
 const props = defineProps<{ sheet: SheetParameters; selected: string }>();
+const emit = defineEmits<{ loaded: [] }>();
 defineSlots<{
-  loader(): unknown;
   select(props: { options: string[] }): unknown;
 }>();
 
@@ -26,6 +25,7 @@ async function fetchData() {
   const transformer = new V1(props.sheet);
   communities.value = await transformer.fetch();
   loaded.value = true;
+  emit("loaded");
 }
 
 onMounted(fetchData);
@@ -33,10 +33,7 @@ watch(props, fetchData);
 </script>
 
 <template>
-  <template v-if="!loaded">
-    <slot name="loader" />
-  </template>
-  <template v-else>
+  <div>
     <slot name="select" :options="communityOptions" />
 
     <template v-if="selectedCommunity">
@@ -52,5 +49,5 @@ watch(props, fetchData);
         </li>
       </ul>
     </template>
-  </template>
+  </div>
 </template>

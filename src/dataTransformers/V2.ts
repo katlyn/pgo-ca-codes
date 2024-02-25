@@ -1,10 +1,12 @@
-import Transformer from "../dataTransformers/Transformer";
-import { parseDate, ParsedSheet } from "../sheetUtils";
+import Transformer from "./Transformer";
+import { GSheetTab, parseDate, ParsedSheet } from "../sheetUtils";
+import { AllowedVersions } from "./index";
 
 export interface Community {
   name: string;
   events: CommunityEvent[];
 }
+
 export interface CommunityEvent {
   name: string;
   date: Date;
@@ -14,6 +16,7 @@ export interface CommunityEvent {
 export type V2Transformed = Record<string, Community>;
 
 export class V2 extends Transformer {
+  static version = "V2" as AllowedVersions;
   query = "SELECT A,B,C,D,E";
   columnMapping = {
     A: "communityName",
@@ -25,6 +28,10 @@ export class V2 extends Transformer {
 
   async fetch(): Promise<V2Transformed> {
     return (await super.fetch()) as Promise<V2Transformed>;
+  }
+
+  static extractGid(tabs: GSheetTab[]): string | null {
+    return tabs.find((t) => t.name === "Codes")?.gid ?? null;
   }
 
   transform(data: ParsedSheet<typeof this.columnMapping>): V2Transformed {

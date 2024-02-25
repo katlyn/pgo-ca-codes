@@ -6,8 +6,8 @@ import copy from "../copy";
 import CopyButton from "./CopyButton.vue";
 
 const props = defineProps<{ sheet: SheetParameters; selected: string }>();
+const emit = defineEmits<{ loaded: [] }>();
 defineSlots<{
-  loader(): unknown;
   select(props: { options: string[] }): unknown;
 }>();
 
@@ -30,6 +30,7 @@ async function fetchData() {
   const transformer = new V2(props.sheet);
   communities.value = await transformer.fetch();
   loaded.value = true;
+  emit("loaded");
 }
 
 onMounted(fetchData);
@@ -37,24 +38,19 @@ watch(props, fetchData);
 </script>
 
 <template>
-  <template v-if="!loaded">
-    <slot name="loader" />
-  </template>
-  <template v-else>
-    <slot name="select" :options="communityOptions" />
+  <slot name="select" :options="communityOptions" />
 
-    <template v-if="selectedCommunity">
-      <h2>{{ selectedCommunity.name }}</h2>
-      <template v-for="event in sortEvents(selectedCommunity.events)">
-        <div class="flex justify-between items-center">
-          <h3>{{ event.name }} - {{ event.date.toLocaleDateString() }}</h3>
-          <CopyButton :data="event.codes.join(', ')">Copy Codes</CopyButton>
-        </div>
-        <ul class="list-disc ml-8">
-          <li v-for="code in event.codes" class="font-mono">{{ code }}</li>
-        </ul>
-        <hr class="m-4" />
-      </template>
+  <template v-if="selectedCommunity">
+    <h2>{{ selectedCommunity.name }}</h2>
+    <template v-for="event in sortEvents(selectedCommunity.events)">
+      <div class="flex justify-between items-center">
+        <h3>{{ event.name }} - {{ event.date.toLocaleDateString() }}</h3>
+        <CopyButton :data="event.codes.join(', ')">Copy Codes</CopyButton>
+      </div>
+      <ul class="list-disc ml-8">
+        <li v-for="code in event.codes" class="font-mono">{{ code }}</li>
+      </ul>
+      <hr class="m-4" />
     </template>
   </template>
 </template>

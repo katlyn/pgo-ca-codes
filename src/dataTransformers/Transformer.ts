@@ -1,16 +1,13 @@
 import {
-  extractSheetParameters,
   fetchSheet,
+  GSheetTab,
   ParsedSheet,
   SheetParameters,
 } from "../sheetUtils";
-
-export enum AllowedVersions {
-  V1 = "V1",
-  V2 = "V2",
-}
+import { AllowedVersions } from "./index";
 
 export default abstract class Transformer {
+  static version: AllowedVersions;
   abstract query: string;
   abstract columnMapping: Record<string, string>;
   sheetParameters: SheetParameters;
@@ -26,6 +23,10 @@ export default abstract class Transformer {
       this.columnMapping,
     );
     return this.transform(data);
+  }
+
+  static extractGid(tabs: GSheetTab[]): string | null {
+    return null;
   }
 
   abstract transform(data: ParsedSheet<typeof this.columnMapping>): unknown;

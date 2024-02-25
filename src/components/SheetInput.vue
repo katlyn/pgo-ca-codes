@@ -1,23 +1,64 @@
 <script setup lang="ts">
-import { AllowedVersions } from "../dataTransformers/Transformer";
+import {
+  AllowedVersions,
+  orderedVersions,
+  versions,
+} from "../dataTransformers";
 import { ref } from "vue";
-import { extractSheetParameters } from "../sheetUtils";
+import { extractSheetKey, fetchSheetTabs, GSheetTab } from "../sheetUtils";
 import ColumnMappingTable from "./ColumnMappingTable.vue";
 
 const sheetURL = ref("");
-const selectedVersion = ref<AllowedVersions>(AllowedVersions.V2);
+const selectedVersion = ref<AllowedVersions | "auto">("auto");
 
-function parseUrl() {
+function guessVersion(tabs: GSheetTab[]): AllowedVersions | null {
+  for (const version of orderedVersions) {
+    const extracted = version.extractGid(tabs);
+    if (extracted !== null) {
+      return version.version;
+    }
+  }
+  return null;
+}
+
+async function parseUrl() {
   try {
-    const sheetParams = extractSheetParameters(sheetURL.value);
+    const sheetKey = extractSheetKey(sheetURL.value);
+    if (sheetKey === null) {
+      alert("The provided URL does not point to a Google Sheet.");
+      return;
+    }
+
+    const tabs = await fetchSheetTabs(sheetKey);
+    const version =
+      selectedVersion.value === "auto"
+        ? guessVersion(tabs)
+        : selectedVersion.value;
+    if (version === null) {
+      alert(
+        "Unable to guess version number. Are you sure the provided URL goes to the correct Google Sheet?",
+      );
+      return;
+    }
+
+    const gid = versions[version].extractGid(tabs);
+    if (gid === null) {
+      alert(
+        "Unable to locate code tab within the given sheet. Did you select the correct version?",
+      );
+      return;
+    }
+
     const newUrl = new URL(window.location.href);
-    newUrl.searchParams.set("version", selectedVersion.value);
-    newUrl.searchParams.set("key", sheetParams.key);
-    newUrl.searchParams.set("gid", sheetParams.gid);
+    newUrl.searchParams.set("version", version);
+    newUrl.searchParams.set("key", sheetKey);
+    newUrl.searchParams.set("gid", gid);
     window.location.assign(newUrl);
   } catch (error) {
     console.error(error);
-    alert("Unable to parse that sheet URL. Are you sure it's correct?");
+    alert(
+      "An issue occurred while attempting to fetch information for this sheet. See console for more information.",
+    );
   }
 }
 </script>
@@ -38,6 +79,7 @@ function parseUrl() {
     />
     <label for="version-select" class="sr-only">Version</label>
     <select v-model="selectedVersion" id="version-select" class="w-24">
+      <option value="auto">Auto</option>
       <option
         v-for="version of Object.keys(AllowedVersions).sort().reverse()"
         :value="version"

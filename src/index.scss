@@ -6,8 +6,12 @@ body {
   @apply bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400;
 }
 
+header {
+  @apply text-2xl mb-6 text-gray-900 dark:text-white;
+}
+
 h1 {
-  @apply text-5xl mb-6 text-gray-900 dark:text-white;
+  @apply text-4xl mb-6 text-gray-900 dark:text-white;
 }
 
 h2 {

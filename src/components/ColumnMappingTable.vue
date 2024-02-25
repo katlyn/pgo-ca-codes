@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AllowedVersions } from "../dataTransformers/Transformer";
+import { AllowedVersions } from "../dataTransformers";
 import { V1 } from "../dataTransformers/V1";
 import { V2 } from "../dataTransformers/V2";
 import { computed, useSlots } from "vue";
