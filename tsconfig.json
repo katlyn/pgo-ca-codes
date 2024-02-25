@@ -3,6 +3,7 @@
   "compilerOptions": {
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "strictNullChecks": true
   }
 }
