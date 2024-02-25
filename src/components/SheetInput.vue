@@ -55,6 +55,16 @@ async function parseUrl() {
     newUrl.searchParams.set("gid", gid);
     window.location.assign(newUrl);
   } catch (error) {
+    if (error instanceof Error) {
+      switch (error.message) {
+        case "Fetching sheet not OK": {
+          alert(
+            'Unable to access the provided Google Sheet. Is sharing set to "anyone with the link" and has the correct URL been provided?',
+          );
+          return;
+        }
+      }
+    }
     console.error(error);
     alert(
       "An issue occurred while attempting to fetch information for this sheet. See console for more information.",
@@ -95,13 +105,17 @@ async function parseUrl() {
     The version you should use depends on the layout of the sheet you would like
     to get a URL for. You must use the correct version for the layout of the
     sheet, or data will not be pulled correctly. See below for a reference of
-    what each sheet version looks like. In most cases, the newest version is the
-    one you should select.
+    what each sheet version looks like. In most cases, selecting Auto will be
+    able to successfully identify which sheet version you are using.
   </p>
 
   <dl>
     <dt>V1</dt>
     <dd>
+      <p>
+        V1 sheets have a hidden tab titled <code>BUNDLES</code> formatted with
+        the following columns:
+      </p>
       <ColumnMappingTable version="V1">
         Codes are contained within one tab, with only community names and codes
         specified.
@@ -110,6 +124,10 @@ async function parseUrl() {
 
     <dt>V2</dt>
     <dd>
+      <p>
+        V2 sheets have a hidden tab titled <code>Codes</code> formatted with the
+        following columns:
+      </p>
       <ColumnMappingTable version="V2">
         Multiple events per community are specified, with dates and events names
         alongside community names.

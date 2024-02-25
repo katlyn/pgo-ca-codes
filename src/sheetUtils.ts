@@ -77,7 +77,10 @@ async function fetchEditView(key: string) {
   const htmlViewURL = new URL(
     `https://docs.google.com/spreadsheets/d/${key}/edit`,
   );
-  const response = await fetch(htmlViewURL);
+  const response = await fetch(htmlViewURL, { redirect: "manual" });
+  if (response.status !== 200) {
+    throw new Error("Fetching sheet not OK");
+  }
   const html = await response.text();
   const parser = new DOMParser();
   return parser.parseFromString(html, "text/html");
