@@ -3,3 +3,5 @@ declare module "*.vue" {
   const _default: VueConstructor<Vue>;
   export default _default;
 }
+
+declare const process: { env: Record<string, string> };

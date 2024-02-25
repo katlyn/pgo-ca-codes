@@ -2,13 +2,11 @@
   "name": "pogo-ca-codes",
   "version": "1.0.0",
   "description": "Pull CA event codes from Google Sheets for easy display and distribution",
-  "source": "src/index.html",
-  "browserslist": [
-    "> 0.5%, last 2 versions, not dead"
-  ],
   "scripts": {
-    "build": "parcel build --public-url ./",
-    "dev": "parcel src/index.html",
+    "dev": "concurrently \"pnpm:dev:*\"",
+    "dev:backend": "pnpm run --filter backend dev",
+    "dev:frontend": "pnpm run --filter frontend dev",
+    "build": "docker build .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky"
   },
@@ -18,15 +16,10 @@
   "devDependencies": {
     "@parcel/transformer-sass": "2.11.0",
     "@parcel/transformer-vue": "2.11.0",
+    "concurrently": "^8.2.2",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
-    "parcel": "^2.11.0",
-    "postcss": "^8.4.35",
-    "prettier": "^3.2.5",
-    "tailwindcss": "^3.4.1"
-  },
-  "dependencies": {
-    "vue": "^3.4.19"
+    "prettier": "^3.2.5"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"

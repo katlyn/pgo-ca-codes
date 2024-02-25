@@ -73,9 +73,9 @@ export function parseDate(dateString: string) {
   return new Date(dateString.substring(5, dateString.length - 1));
 }
 
-async function fetchEditView(key: string) {
+async function fetchHTMLView(key: string) {
   const htmlViewURL = new URL(
-    `https://docs.google.com/spreadsheets/d/${key}/edit`,
+    `https://docs.google.com/spreadsheets/d/${key}/htmlview`,
   );
   const response = await fetch(htmlViewURL, { redirect: "manual" });
   if (response.status !== 200) {
@@ -87,58 +87,23 @@ async function fetchEditView(key: string) {
 }
 
 export async function fetchSheetName(key: string): Promise<string | null> {
-  const doc = await fetchEditView(key);
-  return (
-    doc.querySelector('[property="og:title"]')?.getAttribute?.("content") ??
-    null
-  );
+  try {
+    const doc = await fetchHTMLView(key);
+    return (
+      doc
+        .querySelector("title")
+        ?.innerText?.slice?.(0, " - Google Drive".length) ?? null
+    );
+  } catch {
+    return null;
+  }
 }
 
 export type GSheetTab = { name: string; gid: string };
-const snapshotRegex = /topsnapshot":(.+),"revision"/;
 
 export async function fetchSheetTabs(key: string): Promise<GSheetTab[]> {
-  const doc = await fetchEditView(key);
-
-  // Pull the script tag that has the bootstrap data out of the page
-  const scriptElements = doc.querySelectorAll("script");
-  const bootstrapScript = Array.from(scriptElements).find((el) =>
-    el.innerText.includes("var bootstrapData"),
-  );
-
-  if (bootstrapScript === undefined) {
-    throw new Error("Unable to extract bootstrap script!");
-  }
-
-  // Extract the "topsnapshot" array, so we can pull tab names and GIDs
-  const bootstrapSnapshot = bootstrapScript.innerText.match(snapshotRegex);
-  if (bootstrapSnapshot === null) {
-    throw new Error("Unable to extract bootstrap topsnapshot!");
-  }
-
-  // Extract the tab data from the snapshot - there's no documentation about
-  // what format this is, so this somewhat brute forces it. With luck, it won't
-  // break any time soon.
-  const snapshot: [number, string][] = JSON.parse(bootstrapSnapshot[1]);
-  const tabSnapshotData = snapshot
-    .map(([_, str]) => {
-      try {
-        return JSON.parse(str);
-      } catch {
-        return null;
-      }
-    })
-    .filter(
-      (v) =>
-        v !== null &&
-        Array.isArray(v) &&
-        v[1] === 0 &&
-        v?.[3]?.[0]?.[1]?.[0]?.[2] !== undefined,
-    );
-
-  // If these indexes seem insane it's because I went insane figuring them out
-  return tabSnapshotData.map((v) => ({
-    name: v[3][0][1][0][2],
-    gid: v[2].toString(),
-  }));
+  const url = new URL("./sheetTabs", process.env.API_ROOT);
+  url.searchParams.set("key", key);
+  const response = await fetch(url);
+  return await response.json();
 }
