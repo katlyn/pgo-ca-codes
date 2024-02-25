@@ -102,7 +102,10 @@ export async function fetchSheetName(key: string): Promise<string | null> {
 export type GSheetTab = { name: string; gid: string };
 
 export async function fetchSheetTabs(key: string): Promise<GSheetTab[]> {
-  const url = new URL("./sheetTabs", process.env.API_ROOT);
+  const url = new URL(
+    "./sheetTabs",
+    new URL(process.env.API_ROOT, window.location.href),
+  );
   url.searchParams.set("key", key);
   const response = await fetch(url);
   return await response.json();

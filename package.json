@@ -1,8 +1,9 @@
 {
-  "name": "pogo-ca-codes",
+  "name": "pgo-ca-codes",
   "version": "1.0.0",
   "description": "Pull CA event codes from Google Sheets for easy display and distribution",
   "scripts": {
+    "start": "node backend/dist/index.js",
     "dev": "concurrently \"pnpm:dev:*\"",
     "dev:backend": "pnpm run --filter backend dev",
     "dev:frontend": "pnpm run --filter frontend dev",
