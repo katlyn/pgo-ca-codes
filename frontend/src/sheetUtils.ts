@@ -4,12 +4,12 @@ interface GVizResponse {
   status: string;
   sig: string;
   table: GVizTable;
-  parsedNumHeaders: number;
 }
 
 interface GVizTable {
   cols: GVizCol[];
   rows: GVizRow[];
+  parsedNumHeaders: number;
 }
 
 interface GVizCol {
@@ -28,21 +28,59 @@ interface GVizCell {
 }
 
 export type ColumnMapping = Record<string, string>;
+export type TableMapping = Record<
+  string,
+  {
+    name: string;
+    query: string;
+    mapping: ColumnMapping;
+  }
+>;
+
 export type ParsedRow<M extends ColumnMapping> = {
   [K in keyof M as M[K]]: string;
 };
 export type ParsedSheet<M extends ColumnMapping> = ParsedRow<M>[];
+export type ParsedWorkbook<M extends TableMapping> = {
+  [K in keyof M as M[K]["name"]]: ParsedSheet<M[K]["mapping"]>;
+};
 export type SheetParameters = { key: string; gid: string };
 
+export async function fetchWorkbook<T extends TableMapping>(
+  key: string,
+  tabs: GSheetTab[],
+  tableMapping: T,
+): Promise<ParsedWorkbook<T>> {
+  const ret = {};
+  const promises: Promise<void>[] = [];
+  for (const [tabName, { name, query, mapping }] of Object.entries(
+    tableMapping,
+  )) {
+    promises.push(
+      new Promise(async (resolve) => {
+        const { gid } = tabs.find((v) => v.name === tabName) ?? {};
+        if (gid === undefined) {
+          throw new Error("Unable to extract sheet GID");
+        }
+        ret[name] = await fetchSheet(key, gid, query, mapping);
+        resolve();
+      }),
+    );
+  }
+  await Promise.all(promises);
+  return ret as ParsedWorkbook<T>;
+}
+
 export async function fetchSheet<T extends ColumnMapping>(
-  sheet: SheetParameters,
+  key: string,
+  gid: string,
   query: string,
   columnMapping: T,
 ): Promise<ParsedSheet<T>> {
   const queryUrl = new URL(
-    `https://docs.google.com/spreadsheets/d/${sheet.key}/gviz/tq`,
+    `https://docs.google.com/spreadsheets/d/${key}/gviz/tq`,
   );
-  queryUrl.searchParams.set("gid", sheet.gid);
+  queryUrl.searchParams.set("gid", gid);
   queryUrl.searchParams.set("tq", query);
   // Append a JS function of known length, so we can tear out the JSON easily
   queryUrl.searchParams.set("tqx", "responseHandler:remove");
@@ -54,12 +92,15 @@ export async function fetchSheet<T extends ColumnMapping>(
   );
   const keys = parsed.table.cols.map((cell) => columnMapping[cell.id]);
 
-  return parsed.table.rows.map((row) => {
-    return row.c.reduce((acc, curr, idx) => {
-      acc[keys[idx]] = (curr.v ?? "").toString();
-      return acc;
-    }, {} as ParsedRow<T>);
-  });
+  // Always slice off at least one row for headers
+  return parsed.table.rows
+    .slice(1 - parsed.table.parsedNumHeaders)
+    .map((row) => {
+      return row.c.reduce((acc, curr, idx) => {
+        acc[keys[idx]] = (curr.v ?? "").toString();
+        return acc;
+      }, {} as ParsedRow<T>);
+    });
 }
 
 const keyFormat = new RegExp("spreadsheets/d/([^/#]+)", "i");
@@ -92,7 +133,7 @@ export async function fetchSheetName(key: string): Promise<string | null> {
     return (
       doc
         .querySelector("title")
-        ?.innerText?.slice?.(0, " - Google Drive".length) ?? null
+        ?.innerText?.slice?.(0, -" - Google Drive".length) ?? null
     );
   } catch {
     return null;

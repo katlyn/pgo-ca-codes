@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import { SheetParameters } from "../sheetUtils";
-import { computed, defineAsyncComponent, ref } from "vue";
+import { computed, defineAsyncComponent, onMounted, ref } from "vue";
 import { AllowedVersions, versions } from "../dataTransformers";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import SheetName from "./SheetName.vue";
+import { fetchSheetTabs, GSheetTab } from "../sheetUtils";
 
 const props = defineProps<{
   version: AllowedVersions;
-  sheet: SheetParameters;
+  sheetKey: string;
 }>();
 
 const selectedCommunity = ref("");
+
+const tabs = ref<GSheetTab[] | null>(null);
+
 const codesLoaded = ref(false);
 const nameLoaded = ref(false);
 const loaded = computed(() => codesLoaded.value && nameLoaded.value);
@@ -19,6 +22,10 @@ const versions = {
   [AllowedVersions.V1]: defineAsyncComponent(() => import("./V1Listing.vue")),
   [AllowedVersions.V2]: defineAsyncComponent(() => import("./V2Listing.vue")),
 };
+
+onMounted(async () => {
+  tabs.value = await fetchSheetTabs(props.sheetKey);
+});
 </script>
 
 <template>
@@ -31,15 +38,17 @@ const versions = {
     Loading codes...
   </div>
   <SheetName
-    :sheet="sheet"
+    :sheetKey="props.sheetKey"
     @loaded="nameLoaded = true"
     v-slot="{ value: name }"
   >
     <h1 v-if="loaded" class="text-center">{{ name }}</h1>
   </SheetName>
   <component
-    :is="versions[version]"
-    :sheet="sheet"
+    v-if="tabs !== null"
+    :is="versions[props.version]"
+    :sheetKey="props.sheetKey"
+    :tabs="tabs"
     :selected="selectedCommunity"
     @loaded="codesLoaded = true"
   >

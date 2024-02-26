@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import { fetchSheetName, SheetParameters } from "../sheetUtils";
+import { fetchSheetName } from "../sheetUtils";
 
 const emit = defineEmits<{ loaded: [] }>();
 defineSlots<{
   name(props: { name: string }): unknown;
 }>();
 
-const props = defineProps<{ sheet: SheetParameters }>();
+const props = defineProps<{ sheetKey: string }>();
 const name = ref<string | null>(null);
 
 async function fetchData() {
-  name.value = await fetchSheetName(props.sheet.key);
+  name.value = await fetchSheetName(props.sheetKey);
   emit("loaded");
 }
 

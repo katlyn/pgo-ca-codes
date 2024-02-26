@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import { CommunityEvent, V2, V2Transformed } from "../dataTransformers/V2";
-import { SheetParameters } from "../sheetUtils";
-import copy from "../copy";
+import { GSheetTab } from "../sheetUtils";
 import CopyButton from "./CopyButton.vue";
 
-const props = defineProps<{ sheet: SheetParameters; selected: string }>();
+const props = defineProps<{
+  sheetKey: string;
+  selected: string;
+  tabs: GSheetTab[];
+}>();
 const emit = defineEmits<{ loaded: [] }>();
 defineSlots<{
   select(props: { options: string[] }): unknown;
@@ -27,7 +30,7 @@ function sortEvents(events: CommunityEvent[]) {
 }
 
 async function fetchData() {
-  const transformer = new V2(props.sheet);
+  const transformer = new V2(props.sheetKey, props.tabs);
   communities.value = await transformer.fetch();
   loaded.value = true;
   emit("loaded");

@@ -1,20 +1,13 @@
 <script setup lang="ts">
-import {
-  AllowedVersions,
-  orderedVersions,
-  versions,
-} from "../dataTransformers";
+import { AllowedVersions, orderedVersions } from "../dataTransformers";
 import { ref } from "vue";
 import { extractSheetKey, fetchSheetTabs, GSheetTab } from "../sheetUtils";
-import ColumnMappingTable from "./ColumnMappingTable.vue";
 
 const sheetURL = ref("");
-const selectedVersion = ref<AllowedVersions | "auto">("auto");
 
 function guessVersion(tabs: GSheetTab[]): AllowedVersions | null {
   for (const version of orderedVersions) {
-    const extracted = version.extractGid(tabs);
-    if (extracted !== null) {
+    if (version.matchesVersion(tabs)) {
       return version.version;
     }
   }
@@ -30,21 +23,10 @@ async function parseUrl() {
     }
 
     const tabs = await fetchSheetTabs(sheetKey);
-    const version =
-      selectedVersion.value === "auto"
-        ? guessVersion(tabs)
-        : selectedVersion.value;
+    const version = guessVersion(tabs);
     if (version === null) {
       alert(
-        "Unable to guess version number. Are you sure the provided URL goes to the correct Google Sheet?",
-      );
-      return;
-    }
-
-    const gid = versions[version].extractGid(tabs);
-    if (gid === null) {
-      alert(
-        "Unable to locate code tab within the given sheet. Did you select the correct version?",
+        "Unable to determine layout version number. Are you sure the provided URL goes to the correct Google Sheet?",
       );
       return;
     }
@@ -52,7 +34,7 @@ async function parseUrl() {
     const newUrl = new URL(window.location.href);
     newUrl.searchParams.set("version", version);
     newUrl.searchParams.set("key", sheetKey);
-    newUrl.searchParams.set("gid", gid);
+    console.log(newUrl);
     window.location.assign(newUrl);
   } catch (error) {
     if (error instanceof Error) {
@@ -76,7 +58,7 @@ async function parseUrl() {
 <template>
   <p class="text-center mb-2">
     <span class="font-bold">Important:</span>
-    you must use the full URL of the tab that has code bundles on it.
+    the sheet must have sharing set to "anyone with link".
   </p>
   <form @submit.prevent="parseUrl" class="flex gap-2 mb-6">
     <label for="url-input" class="sr-only">Sheet URL</label>
@@ -87,6 +69,7 @@ async function parseUrl() {
       class="grow"
       placeholder="Sheet URL"
     />
+    <!--
     <label for="version-select" class="sr-only">Version</label>
     <select v-model="selectedVersion" id="version-select" class="w-24">
       <option value="auto">Auto</option>
@@ -97,9 +80,11 @@ async function parseUrl() {
         {{ version }}
       </option>
     </select>
+    -->
     <button type="submit" class="w-24">Go!</button>
   </form>
 
+  <!--
   <h2>Which version should I use?</h2>
   <p>
     The version you should use depends on the layout of the sheet you would like
@@ -134,4 +119,5 @@ async function parseUrl() {
       </ColumnMappingTable>
     </dd>
   </dl>
+  -->
 </template>
