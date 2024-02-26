@@ -5,12 +5,26 @@ import { secret, strictVerify, transform } from "env-verifier";
 export const defaults: Record<string, string> = {
   HTTP_HOST: "0.0.0.0",
   HTTP_PORT: "8080",
+  HTTP_TRUST_PROXY: "false",
 };
 
 export const config = {
   http: {
     host: "HTTP_HOST",
     port: transform("HTTP_PORT", Number),
+    trustProxy: transform("HTTP_TRUST_PROXY", (v) => {
+      if (v.toLowerCase() === "true") {
+        return true;
+      }
+      const parsed = Number(v);
+      if (!isNaN(parsed)) {
+        return parsed;
+      }
+      if (v.includes(".") || v.includes(":")) {
+        return v.split(",").map((s) => s.trim());
+      }
+      return false;
+    }),
   },
 };
 

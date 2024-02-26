@@ -3,6 +3,7 @@ import env from "./env.js";
 
 const server = await buildServer({
   logger: { level: "info" },
+  trustProxy: env.http.trustProxy,
 });
 
 server.listen(
