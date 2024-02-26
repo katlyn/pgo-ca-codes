@@ -108,5 +108,8 @@ export async function fetchSheetTabs(key: string): Promise<GSheetTab[]> {
   );
   url.searchParams.set("key", key);
   const response = await fetch(url);
+  if (response.status !== 200) {
+    throw new Error("Fetching sheet not OK");
+  }
   return await response.json();
 }
