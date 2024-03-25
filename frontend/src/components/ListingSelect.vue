@@ -19,8 +19,15 @@ const nameLoaded = ref(false);
 const loaded = computed(() => codesLoaded.value && nameLoaded.value);
 
 const versions = {
-  [AllowedVersions.V1]: defineAsyncComponent(() => import("./V1Listing.vue")),
-  [AllowedVersions.V2]: defineAsyncComponent(() => import("./V2Listing.vue")),
+  [AllowedVersions.Fallback]: defineAsyncComponent(
+    () => import("./listings/FallbackListing.vue"),
+  ),
+  [AllowedVersions.V1]: defineAsyncComponent(
+    () => import("./listings/V1Listing.vue"),
+  ),
+  [AllowedVersions.V2]: defineAsyncComponent(
+    () => import("./listings/V2Listing.vue"),
+  ),
 };
 
 onMounted(async () => {

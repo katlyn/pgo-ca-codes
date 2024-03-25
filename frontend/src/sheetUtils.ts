@@ -60,7 +60,7 @@ export async function fetchWorkbook<T extends TableMapping>(
       new Promise(async (resolve) => {
         const { gid } = tabs.find((v) => v.name === tabName) ?? {};
         if (gid === undefined) {
-          throw new Error("Unable to extract sheet GID");
+          throw new Error(`Unable to extract sheet GID for ${tabName}`);
         }
         ret[name] = await fetchSheet(key, gid, query, mapping);
         resolve();

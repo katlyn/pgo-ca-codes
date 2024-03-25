@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { V1, V1Transformed } from "../dataTransformers/V1";
-import { GSheetTab, SheetParameters } from "../sheetUtils";
-import CopyButton from "./CopyButton.vue";
+import { V1, V1Transformed } from "../../dataTransformers/V1";
+import { GSheetTab, SheetParameters } from "../../sheetUtils";
+import CopyButton from "../CopyButton.vue";
 
 const props = defineProps<{
   sheetKey: string;
