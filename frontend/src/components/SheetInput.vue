@@ -60,7 +60,7 @@ async function parseUrl() {
     <span class="font-bold">Important:</span>
     the sheet must have sharing set to "anyone with link".
   </p>
-  <form @submit.prevent="parseUrl" class="flex gap-2 mb-6">
+  <form @submit.prevent="parseUrl" autocomplete="off" class="flex gap-2 mb-6">
     <label for="url-input" class="sr-only">Sheet URL</label>
     <input
       v-model="sheetURL"
