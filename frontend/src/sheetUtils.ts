@@ -95,6 +95,7 @@ export async function fetchSheet<T extends ColumnMapping>(
   // Always slice off at least one row for headers
   return parsed.table.rows
     .slice(1 - parsed.table.parsedNumHeaders)
+    .filter((row) => row.c.every((c) => c != null)) // Make sure none of the resulting columns are null otherwise we will explode
     .map((row) => {
       return row.c.reduce((acc, curr, idx) => {
         acc[keys[idx]] = (curr.v ?? "").toString();
