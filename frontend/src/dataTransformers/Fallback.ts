@@ -34,8 +34,12 @@ export class Fallback extends Transformer {
   tableMapping: Record<string, typeof baseTableMapping> = {};
 
   async fetch(): Promise<FallbackTransformed> {
+    let tabName = "Sheet2";
+    if (this.tabs.find((v) => v.name === tabName)) {
+      tabName = this.tabs[0].name;
+    }
     this.tableMapping = {
-      [this.tabs[this.tabs.length - 1].name]: baseTableMapping,
+      [tabName]: baseTableMapping,
     };
     return (await super.fetch()) as Promise<FallbackTransformed>;
   }
