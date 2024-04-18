@@ -21,7 +21,7 @@ export type FallbackTransformed = Record<string, Community>;
 
 const baseTableMapping = {
   name: "codes",
-  query: "SELECT A,B,C,D,E",
+  query: "SELECT A,B,E",
   mapping: {
     A: "communityName",
     B: "date",
